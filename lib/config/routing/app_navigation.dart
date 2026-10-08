@@ -85,10 +85,14 @@ final class AppNavigation {
 
   /// Builds the stateful shell straight from [branches], so there is no
   /// "reorder these two lists together" contract left to break.
+  /// [observerFactory] is called ONCE PER BRANCH and must return fresh
+  /// observers each time: a NavigatorObserver can serve exactly one Navigator,
+  /// so reusing one instance trips `assert(observer.navigator == null)` on the
+  /// first build.
   RouteBase buildShell({
     required GlobalKey<NavigatorState> rootNavigatorKey,
     required Widget Function(BuildContext context, GoRouterState state, StatefulNavigationShell shell) shellBuilder,
-    List<NavigatorObserver> observers = const <NavigatorObserver>[],
+    List<NavigatorObserver> Function(ShellBranch branch)? observerFactory,
   }) => StatefulShellRoute.indexedStack(
     pageBuilder: (context, state, shell) =>
         NoTransitionPage<void>(key: state.pageKey, child: shellBuilder(context, state, shell)),
@@ -96,7 +100,7 @@ final class AppNavigation {
       for (final branch in branches)
         StatefulShellBranch(
           navigatorKey: branch.navigatorKey,
-          observers: observers,
+          observers: observerFactory == null ? const <NavigatorObserver>[] : observerFactory(branch),
           initialLocation: branch.destination.spec.path,
           routes: branch.module.routes(rootNavigatorKey),
         ),

@@ -38,7 +38,9 @@ GoRouter router(Ref ref) {
   ref.onDispose(refresh.dispose);
 
   const policy = RedirectPolicy();
-  final observer = AppRouteObserver(talker, registry: registry);
+  // One observer instance per navigator - see AppRouteObserver's note on why
+  // sharing one trips `observer.navigator == null`.
+  AppRouteObserver newObserver(String label) => AppRouteObserver(talker, registry: registry, label: label);
 
   // Synchronous on purpose: it runs on every navigation including the first
   // frame, and anything async shows up as a flicker.
@@ -69,11 +71,11 @@ GoRouter router(Ref ref) {
     redirectLimit: 8,
     redirect: onRedirect,
     onException: onException,
-    observers: [observer],
+    observers: [newObserver('root')],
     routes: [
       navigation.buildShell(
         rootNavigatorKey: rootNavigatorKey,
-        observers: [observer],
+        observerFactory: (branch) => [newObserver(branch.destination.spec.name)],
         shellBuilder: (context, state, shell) => MainShell(navigationShell: shell),
       ),
       for (final module in AppModules.topLevel) ...module.routes(rootNavigatorKey),

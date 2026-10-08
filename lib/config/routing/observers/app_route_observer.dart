@@ -12,12 +12,25 @@ import '../route_registry.dart';
 ///
 /// Attach it to the root navigator AND to each shell branch: a navigator only
 /// reports its own stack.
+///
+/// ONE INSTANCE PER NAVIGATOR. A NavigatorObserver holds a back-reference to
+/// the navigator it serves, and `NavigatorState.initState` asserts
+/// `observer.navigator == null` - so sharing a single instance between the root
+/// navigator and the shell branches throws on the very first build. That is why
+/// the shell takes a factory (see `AppNavigation.buildShell`), not a list.
+///
+/// [label] names the navigator in the log, so you can see which stack moved:
+/// `[route:orders] push /orders/42`.
 /// ================================================================================
 class AppRouteObserver extends NavigatorObserver {
-  AppRouteObserver(this._talker, {required this.registry, this.onScreenView});
+  AppRouteObserver(this._talker, {required this.registry, this.label = 'root', this.onScreenView});
 
   final Talker _talker;
   final RouteRegistry registry;
+
+  /// Which navigator this instance watches: 'root' or a branch name.
+  final String label;
+
   final void Function(String screenName)? onScreenView;
 
   @override
@@ -49,7 +62,7 @@ class AppRouteObserver extends NavigatorObserver {
     if (name == null) return;
 
     final from = previous?.settings.name ?? '-';
-    _talker.logCustom(TalkerLog('[route] $action $name (from $from)'));
+    _talker.logCustom(TalkerLog('[route:$label] $action $name (from $from)'));
 
     if (!isEntry || onScreenView == null) return;
     final spec = registry.byName(name) ?? registry.byLocation(name);
