@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../features/dashboard/presentation/routes/dashboard_routes.dart';
 import '../navigation/navigation_extensions.dart';
 import '../route_module.dart';
 import '../route_params.dart';
@@ -26,11 +25,13 @@ final class AuthModule implements RouteModule {
     ShellRoute(
       builder: (context, state, child) => AuthShell(child: child),
       routes: [
+        // No onSubmit: the screen calls AuthController itself and the router
+        // decides where the user lands. Pushing /dashboard from here would be
+        // bounced by AuthGuard, because at that moment there is still no
+        // session - which is exactly how a "dead" sign-in button happens.
         SystemRoutes.login.route(
-          builder: (context, state) => LoginScreen(
-            onForgotPassword: () => context.pushTo<void>(SystemRoutes.forgotPassword),
-            onSubmit: (email, password) => context.pushTo<void>(DashboardRoutes.root),
-          ),
+          builder: (context, state) =>
+              LoginScreen(onForgotPassword: () => context.pushTo<void>(SystemRoutes.forgotPassword)),
         ),
         SystemRoutes.forgotPassword.route(builder: (context, state) => const ForgotPasswordScreen()),
         // Deep-link target from the reset e-mail. Web-critical: the token
