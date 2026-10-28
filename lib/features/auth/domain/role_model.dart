@@ -19,7 +19,8 @@ abstract class RoleModel with _$RoleModel {
     @Default(false) isPrimary,
   }) = _RoleModel;
 
-  factory RoleModel.fromJson(Map<String, dynamic> json) => _$RoleModelFromJson(json);
+  factory RoleModel.fromJson(Map<String, dynamic> json) =>
+      _$RoleModelFromJson(json);
 }
 
 extension RoleModelX on RoleModel {

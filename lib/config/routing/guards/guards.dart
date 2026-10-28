@@ -34,10 +34,16 @@ class AuthGuard extends RouteGuard {
   GuardResult evaluate(GuardContext context) {
     final session = context.session;
     if (session == null) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'not_authenticated');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'not_authenticated',
+      );
     }
     if (session.isAccessTokenExpired) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'token_expired');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'token_expired',
+      );
     }
     return const GuardResult.allow();
   }
@@ -51,7 +57,10 @@ class GuestGuard extends RouteGuard {
   @override
   GuardResult evaluate(GuardContext context) {
     if (context.auth case Authenticated(:final session)) {
-      return GuardResult.redirect(context.returnTo ?? context.homeFor(session), reason: 'already_authenticated');
+      return GuardResult.redirect(
+        context.returnTo ?? context.homeFor(session),
+        reason: 'already_authenticated',
+      );
     }
     return const GuardResult.allow();
   }
@@ -73,13 +82,20 @@ class PermissionGuard extends RouteGuard {
   GuardResult evaluate(GuardContext context) {
     final session = context.session;
     if (session == null) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'not_authenticated');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'not_authenticated',
+      );
     }
 
-    final granted = requireAll ? session.canAll(permissions) : session.canAny(permissions);
+    final granted = requireAll
+        ? session.canAll(permissions)
+        : session.canAny(permissions);
     if (!granted) {
       return GuardResult.redirect(
-        SystemRoutes.forbidden.withQuery({RouteQuery.attempted: context.uri.toString()}),
+        SystemRoutes.forbidden.withQuery({
+          RouteQuery.attempted: context.uri.toString(),
+        }),
         reason: 'missing_permission:${permissions.join(',')}',
       );
     }
@@ -98,11 +114,16 @@ class ResourceGuard extends RouteGuard {
   GuardResult evaluate(GuardContext context) {
     final session = context.session;
     if (session == null) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'not_authenticated');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'not_authenticated',
+      );
     }
     if (!session.canAccess(resource)) {
       return GuardResult.redirect(
-        SystemRoutes.forbidden.withQuery({RouteQuery.attempted: context.uri.toString()}),
+        SystemRoutes.forbidden.withQuery({
+          RouteQuery.attempted: context.uri.toString(),
+        }),
         reason: 'no_access_to:$resource',
       );
     }
@@ -121,11 +142,16 @@ class RoleGuard extends RouteGuard {
   GuardResult evaluate(GuardContext context) {
     final session = context.session;
     if (session == null) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'not_authenticated');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'not_authenticated',
+      );
     }
     if (!session.hasAnyRole(roles)) {
       return GuardResult.redirect(
-        SystemRoutes.forbidden.withQuery({RouteQuery.attempted: context.uri.toString()}),
+        SystemRoutes.forbidden.withQuery({
+          RouteQuery.attempted: context.uri.toString(),
+        }),
         reason: 'wrong_role',
       );
     }
@@ -141,7 +167,10 @@ class OpenShiftGuard extends RouteGuard {
   GuardResult evaluate(GuardContext context) {
     final session = context.session;
     if (session == null) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'not_authenticated');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'not_authenticated',
+      );
     }
     // TODO(shift): gate on the open-shift state once the shift feature lands.
     // Guards are pure, so the shift state must be readable from AuthState or
@@ -165,7 +194,10 @@ class EmailVerifiedGuard extends RouteGuard {
   GuardResult evaluate(GuardContext context) {
     final session = context.session;
     if (session == null) {
-      return GuardResult.redirect(context.gate(SystemRoutes.login), reason: 'not_authenticated');
+      return GuardResult.redirect(
+        context.gate(SystemRoutes.login),
+        reason: 'not_authenticated',
+      );
     }
     if (!session.isEmailVerified) {
       return GuardResult.redirect(verifyAt.path, reason: 'email_unverified');
@@ -218,5 +250,6 @@ abstract final class Guards {
   static RouteGuard anyPermission(Set<String> permissions) =>
       CompositeGuard([const AuthGuard(), PermissionGuard.any(permissions)]);
 
-  static RouteGuard role(Set<String> roles) => CompositeGuard([const AuthGuard(), RoleGuard(roles)]);
+  static RouteGuard role(Set<String> roles) =>
+      CompositeGuard([const AuthGuard(), RoleGuard(roles)]);
 }

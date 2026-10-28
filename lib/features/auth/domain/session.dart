@@ -33,7 +33,8 @@ abstract class Session with _$Session {
     @Default([]) List<PermissionModel> permissions,
   }) = _Session;
 
-  factory Session.fromJson(Map<String, dynamic> json) => _$SessionFromJson(json);
+  factory Session.fromJson(Map<String, dynamic> json) =>
+      _$SessionFromJson(json);
 
   // ==========================================================================
   // PERMISSIONS
@@ -41,7 +42,10 @@ abstract class Session with _$Session {
 
   /// Everything this session may do: permissions inherited from its roles plus
   /// any granted to the user directly, flattened to `resource:action`.
-  Set<String> get permissionKeys => {for (final role in roles) ...role.permissions.keys, ...permissions.keys};
+  Set<String> get permissionKeys => {
+    for (final role in roles) ...role.permissions.keys,
+    ...permissions.keys,
+  };
 
   Set<String> get roleNames => {for (final role in roles) role.name};
 
@@ -63,7 +67,8 @@ abstract class Session with _$Session {
 
   /// True when the session may do *anything* with a resource — the cheap check
   /// for "should this section exist at all".
-  bool canAccess(String resource) => permissionKeys.any((key) => key.startsWith('$resource:'));
+  bool canAccess(String resource) =>
+      permissionKeys.any((key) => key.startsWith('$resource:'));
 
   // ==========================================================================
   // ROLES
@@ -86,5 +91,6 @@ abstract class Session with _$Session {
   // TOKEN
   // ==========================================================================
 
-  bool get isAccessTokenExpired => DateTime.now().toUtc().isAfter(accessTokenExpiresAt.toUtc());
+  bool get isAccessTokenExpired =>
+      DateTime.now().toUtc().isAfter(accessTokenExpiresAt.toUtc());
 }

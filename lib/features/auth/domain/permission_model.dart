@@ -13,7 +13,8 @@ abstract class PermissionModel with _$PermissionModel {
     @Default('') String action,
   }) = _PermissionModel;
 
-  factory PermissionModel.fromJson(Map<String, dynamic> json) => _$PermissionModelFromJson(json);
+  factory PermissionModel.fromJson(Map<String, dynamic> json) =>
+      _$PermissionModelFromJson(json);
 }
 
 /// `resource:action` - the single form every guard, provider and route compares.

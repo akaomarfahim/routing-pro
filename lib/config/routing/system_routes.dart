@@ -12,7 +12,11 @@ import 'transitions/route_transitions.dart';
 abstract final class SystemRoutes {
   const SystemRoutes._();
 
-  static const splash = RouteSpec.root('/splash', name: 'splash', transition: TransitionPreset.none);
+  static const splash = RouteSpec.root(
+    '/splash',
+    name: 'splash',
+    transition: TransitionPreset.none,
+  );
 
   static const login = RouteSpec.root(
     '/login',
@@ -53,9 +57,21 @@ abstract final class SystemRoutes {
     fullscreen: true,
   );
 
-  static const forbidden = RouteSpec.root('/forbidden', name: 'forbidden', title: 'No access');
-  static const notFound = RouteSpec.root('/404', name: 'notFound', title: 'Page not found');
-  static const error = RouteSpec.root('/error', name: 'error', title: 'Something went wrong');
+  static const forbidden = RouteSpec.root(
+    '/forbidden',
+    name: 'forbidden',
+    title: 'No access',
+  );
+  static const notFound = RouteSpec.root(
+    '/404',
+    name: 'notFound',
+    title: 'Page not found',
+  );
+  static const error = RouteSpec.root(
+    '/error',
+    name: 'error',
+    title: 'Something went wrong',
+  );
 
   /// Screens that must never be recorded as a "return to" destination -
   /// that is how redirect loops start.
